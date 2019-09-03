@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from plot_from_metadata import import_meta 
+from utils import import_meta 
 
 
 #update to direct towards proper tracks file (mTrackJ format)
@@ -21,38 +21,7 @@ len_cutoff = 10
 
 
 
-#function to rotate tracks, starts with initial track points and rotates by angle defined above
-
-def rotate(rot_matrix, tracks_matrix):
-    '''
-    input angle in degrees (float) and initial matrix 'embryo' (tracks, coordinates(x, y, z), points)
-    output is matrix 'rotated_embryo' (tracks, coordinates(x, y, z), points)
-
-    '''
-
-    rotated_embryo = np.matmul(rot_matrix, tracks_matrix)
-    return rotated_embryo
-
-#function to define rotation matrix, takes inputs of angle and axis of rotation
-
-def rot_matrix(angle, axis):
-    rot_matrix = np.eye(3) 
-    if axis == 'z':
-        rot_matrix[0][0] = np.cos(np.radians(angle))
-        rot_matrix[1][0] = np.sin(np.radians(angle))
-        rot_matrix[1][1] = np.cos(np.radians(angle))
-        rot_matrix[0][1] = -(np.sin(np.radians(angle)))
-    elif axis == 'y':
-        rot_matrix[0][0] = np.cos(np.radians(angle))
-        rot_matrix[0][2] = np.sin(np.radians(angle))
-        rot_matrix[2][2] = np.cos(np.radians(angle))
-        rot_matrix[2][0] = -(np.sin(np.radians(angle)))
-    else:
-        rot_matrix[1][1] = np.cos(np.radians(angle))
-        rot_matrix[1][2] = np.sin(np.radians(angle))
-        rot_matrix[2][2] = np.cos(np.radians(angle))
-        rot_matrix[1][2] = -(np.sin(np.radians(angle)))
-    return rot_matrix
+#-----------------------------
 
 #function to plot tracks, with arguments to specify color schemes, create plots with equal axes aka 'square',
 #and smooth tracks by averaging over a designated number of timepoints
@@ -216,7 +185,7 @@ print('cal_noto', calibrated_embryo[noto_index, :, :])
 #-----------------------------
 
 
-rotated_embryo = rotate(rot_matrix(angle, axis), calibrated_embryo)
+rotated_embryo = rotate_embryo(calibrated_embryo, angle, axis)
 #rotated_embryo = rotate(rot_matrix(30, 'x'), rotated_embryo)
 
 #-----------------------------
