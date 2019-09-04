@@ -68,6 +68,7 @@ calibrated_embryo = ut.calibrate_to_noto(embryo, noto_index, track_duration)
 
 calibrated_embryo = ut.interpolate_missing_timepoints(calibrated_embryo)
 
+#print(calibrated_embryo[1, :, :])
 
 #-----------------------------
 
@@ -180,7 +181,7 @@ for i, time in enumerate(progenitor):
 #--------------------------------------------
 
 
-ut.plot_tracks(rotated_embryo,'_rot2')
+ut.plot_tracks(rotated_embryo, files[0]+'_rotated', smoothing=3)
 #plot_tracks(rotated_embryo,'_YZ', view=[1,2])
 #plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3)
 #plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3,color=[1,100,1,5,1,5,1,5,1,5,1,5,1,1])
@@ -191,6 +192,9 @@ ut.plot_tracks(rotated_embryo,'_rot2')
 #plot_birthplaces(birthplaces,'birthplaces')
 
 
+
+#MAKE SURE DURATION IS RIGHT - do times go into proper slots or does everything start at first embryo entry?
+#they go into proper slots but why???
 #TO FIX: last color in array does not show up
 #clean up error messages on import_meta 
 #color birthplaces by fate or division type (do same way by making color matrices)

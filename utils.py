@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 
 
@@ -32,7 +35,7 @@ def plot_tracks(tracks_matrix, name, view=[0, 1], color=None, square=True, smoot
              tracks_matrix[i, view[1], :].T,c=color[i])
     if square:  
         plt.axis('equal')
-    plt.savefig(file+name)
+    plt.savefig(name)
     plt.clf()
 
 
@@ -61,7 +64,7 @@ def plot_birthplaces(birthplaces, name, projection=[0,1], color=None, square=Tru
                      birthplaces[i][projection[1]],c=color[i],marker='o',markersize=12)
     if square:  
         plt.axis('equal')
-    plt.savefig(file+name)
+    plt.savefig(name)
     plt.clf()
 
 
