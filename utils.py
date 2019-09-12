@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #plotting functions
 
 
-def plot_tracks(tracks_matrix, name, view=[0, 1], color=None, square=True, smoothing=1):
+def plot_tracks(tracks_matrix, view=[0, 1], color=None, square=True, smoothing=1):
     '''
     Function to plot tracks.
     with arguments to specify color schemes, create plots with equal axes aka 'square',
@@ -35,11 +35,9 @@ def plot_tracks(tracks_matrix, name, view=[0, 1], color=None, square=True, smoot
              tracks_matrix[i, view[1], :].T,c=color[i])
     if square:  
         plt.axis('equal')
-    plt.savefig(name)
-    plt.clf()
 
 
-def plot_birthplaces(birthplaces, name, projection=[0,1], color=None, square=True):
+def plot_birthplaces(birthplaces, projection=[0,1], color=None, square=True):
     '''
     function to plot cell birthplaces, with arguments to specify color schemes, create plots with equal axes aka 'square',
     and project in dorsal, transverse, or lateral view
@@ -47,7 +45,7 @@ def plot_birthplaces(birthplaces, name, projection=[0,1], color=None, square=Tru
     '''
     nprogenitors = len(birthplaces)
     if color is None:
-        color = range(nprogenitors)
+        color = list(range(1,nprogenitors+1))
     elif not len(color) == nprogenitors:
         print('wrong size color')
         exit(1)
@@ -64,9 +62,6 @@ def plot_birthplaces(birthplaces, name, projection=[0,1], color=None, square=Tru
                      birthplaces[i][projection[1]],c=color[i],marker='o',markersize=12)
     if square:  
         plt.axis('equal')
-    plt.savefig(name)
-    plt.clf()
-
 
 
 #----------------------------------------------------------------------------------
@@ -219,3 +214,113 @@ def import_meta(filename, columnname):
     '''
     df = pd.read_csv(filename)
     return list(df[columnname].values)
+
+
+def parse_metadata(meta, filename, track_order, mode=None):
+    '''
+    imports metadata from csv provided in 'meta' variable at top
+    requires columns 'Track Number', 'Sister Cell Track', 'Identity of Tracked Cell', 'Cell Division Timing'
+    creates matrices for color-coding plots by lineage or fate
+
+    '''
+    track_label = import_meta(meta, 'Track Number')
+
+    if len(track_order) != len(track_label):
+        print('metadata and track data do not match')
+        exit(1)
+
+    '''
+    track_order (raw data) and track_label (meta data) might not follow the same order
+    'lineage' and 'fate' are built in the same sequence as track_order
+    track_label is only used as a reference
+
+    '''
+
+    if mode is 'lineage':
+        sister = import_meta(meta, 'Sister Cell Track')
+        lineage = [-1 for item in track_order]
+        k = 0
+
+        for i in range(len(lineage)):
+            if lineage[i] == -1:
+                lineage[i] = k
+                j = track_order[i]
+                j = track_label.index(j)
+                if sister[j] != -1:
+                    l = sister[j]
+                    l = track_order.index(l)
+                    lineage[l] = k
+                k=k+1
+
+        return lineage
+
+    elif mode is 'fate':
+        cell_fate = import_meta(meta, 'Identity of Tracked Cell')
+
+        if len(track_order) != len(cell_fate):
+            print('fate entry missing')
+            exit(1)
+
+        fate = []
+        for track in track_order:
+            j = track_label.index(track)
+            fate.append(cell_fate[j])
+
+        fate = [_fate_by_num(a) for a in fate]
+
+        return fate
+
+    return track_label
+
+
+def _fate_by_num(string):
+    '''        
+    converts cell fate data to integers
+    creates color matrix 'fate' based on cell identities
+
+    '''
+    if string == 'NOTO':
+        return 0
+    elif string == 'FBMN/REN':
+        return 1
+    elif string == 'CEN':
+        return 2
+    elif string == 'Isl1(-)':
+        return 3
+    #Error handling
+    else:
+        return -1
+        print('incorrect fate')
+
+
+def get_birthplaces(meta, filename, tracks_matrix, track_order, track_label, track_duration):
+    '''
+    builds a list of cell birthplace coordinates [x,y,z]
+    references point "t" in rotated_embryo matrix to get coordinates
+    if no birthplace is found, [-1,-1,-1] added so list is compatible with color matrices
+
+    '''
+    
+    progenitor = import_meta(meta, 'Cell Division Timing')
+    birthplaces = []
+
+    for i, time in enumerate(progenitor):
+        try:
+            time = int(time)
+        except:
+            print(i, 'division time is not a number')
+        if time != -1:
+            t = time
+            j = track_label[i]
+            j = track_order.index(j)
+            if track_duration[j][0] < t:
+                birthplaces.append(list(tracks_matrix[j, :, t]))
+            else:
+                birthplaces.append([-1,-1,-1])    
+        elif time == -1:
+            birthplaces.append([-1,-1,-1])
+
+    return birthplaces
+
+
+
