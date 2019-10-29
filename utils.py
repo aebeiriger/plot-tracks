@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #plotting functions
 
 
-def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoothing=1, scaling=[1,1,1]):
+def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoothing=1, scaling=[1,1,1], limits=None):
     '''
     Function to plot tracks.
     with arguments to specify color schemes, create plots with equal axes aka 'square',
@@ -34,10 +34,14 @@ def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoot
         plt.plot(tracks_matrix[i, projection[0], :].T*scaling[projection[0]],
              tracks_matrix[i, projection[1], :].T*scaling[projection[1]],c=color[i])
     if square:  
-        plt.axis('equal')
+        plt.gca().set_aspect('equal')
+
+    if limits:
+        plt.xlim(limits[0][0],limits[0][1])
+        plt.ylim(limits[1][0],limits[1][1])
 
 
-def plot_birthplaces(birthplaces, projection=[0,1], color=None, square=True, scaling=[1,1,1]):
+def plot_birthplaces(birthplaces, projection=[0,1], color=None, square=True, scaling=[1,1,1], limits=None):
     '''
     function to plot cell birthplaces, with arguments to specify color schemes, create plots with equal axes aka 'square',
     and project in dorsal, transverse, or lateral view
@@ -60,8 +64,13 @@ def plot_birthplaces(birthplaces, projection=[0,1], color=None, square=True, sca
         if birthplaces[i] != [-1,-1,-1]:
             plt.plot(birthplaces[i][projection[0]]*scaling[projection[0]],
                      birthplaces[i][projection[1]]*scaling[projection[1]],c=color[i],marker='o',markersize=12)
+
     if square:  
-        plt.axis('equal')
+        plt.gca().set_aspect('equal')
+
+    if limits:
+        plt.xlim(limits[0][0],limits[0][1])
+        plt.ylim(limits[1][0],limits[1][1])
 
 
 #----------------------------------------------------------------------------------
@@ -164,7 +173,7 @@ def interpolate_missing_timepoints(calibrated_embryo, verbose=False):
     return calibrated_embryo
 
 
-def rotate_embryo(tracks_matrix, angle, axis):
+def rotate_embryo(tracks_matrix, angles, axes):
     '''
     Function to rotate tracks.
     Starts with initial track points and rotates by a defined angle, around a defined axis.
@@ -176,9 +185,10 @@ def rotate_embryo(tracks_matrix, angle, axis):
     output is matrix 'rotated_embryo' (tracks, coordinates(x, y, z), points)
 
     '''
-    rot_matrix = _generate_rotation_matrix(angle, axis)
-    rotated_embryo = np.matmul(rot_matrix, tracks_matrix)
-    return rotated_embryo
+    for angle, axis in zip(angles, axes): 
+        rot_matrix = _generate_rotation_matrix(angle, axis)
+        tracks_matrix = np.matmul(rot_matrix, tracks_matrix)
+    return tracks_matrix
 
 
 def _generate_rotation_matrix(angle, axis):

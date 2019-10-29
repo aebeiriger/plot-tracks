@@ -21,13 +21,14 @@ notochords = [28,
             ]
 
 #designate angle and axis of rotation to register tracks anatomically
-angles = [60,
-        #30,
+angles = [[60,15],
+          #[0,30],
          ]
          
-axes = ['z',
-        #'z',
+axes = [['z','x'],
+        #['z','x'],
         ]
+
 
 #tracks this long or shorter will not be included
 len_cutoff = 10
@@ -35,6 +36,8 @@ len_cutoff = 10
 #pixel to microns conversion
 pixel_to_microns = [0.43,0.43,0.43]
 
+# Plot limits [[xmin,xmax],[ymin,ymax]]
+plot_lims = [[-75,75],[-75,75]]
 
 
 #-----------------------------
@@ -79,17 +82,17 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
     except NameError:
         final_birthplaces = birthplaces
 
-ut.plot_tracks(rotated_embryo, smoothing=3, projection=[1, 2], scaling=pixel_to_microns)
-plt.savefig('170315_tracks_YZ')
+ut.plot_tracks(rotated_embryo, smoothing=3, projection=[0, 1], scaling=pixel_to_microns, limits=plot_lims)
+plt.savefig('170315_tracks_YZrotation')
 plt.clf()
 #plot_tracks(rotated_embryo,'_YZ', view=[1,2])
 #plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3)
 #plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3,color=[1,100,1,5,1,5,1,5,1,5,1,5,1,1]
 #plot_tracks(rotated_embryo,'_rot_lineage',smoothing=3,color=lineage) 
 #plot_tracks(rotated_embryo,'_rot_fate_NEW',smoothing=3,color=fate)
-#ut.plot_birthplaces(final_birthplaces, scaling=pixel_to_microns)
-#plt.savefig('170315_birthplaces')
-#plt.clf()
+ut.plot_birthplaces(final_birthplaces, scaling=pixel_to_microns, limits=plot_lims)
+plt.savefig('170315_birthplaces')
+plt.clf()
 
 
 #MAKE SURE DURATION IS RIGHT - do times go into proper slots or does everything start at first embryo entry?
