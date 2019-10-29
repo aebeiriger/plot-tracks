@@ -32,6 +32,9 @@ axes = ['z',
 #tracks this long or shorter will not be included
 len_cutoff = 10
 
+#pixel to microns conversion
+pixel_to_microns = [0.43,0.43,0.43]
+
 
 
 #-----------------------------
@@ -76,17 +79,17 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
     except NameError:
         final_birthplaces = birthplaces
 
-ut.plot_tracks(rotated_embryo, smoothing=3, color=fate)
-plt.savefig('170315_tracks_fate')
+ut.plot_tracks(rotated_embryo, smoothing=3, projection=[1, 2], scaling=pixel_to_microns)
+plt.savefig('170315_tracks_YZ')
 plt.clf()
 #plot_tracks(rotated_embryo,'_YZ', view=[1,2])
 #plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3)
 #plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3,color=[1,100,1,5,1,5,1,5,1,5,1,5,1,1]
 #plot_tracks(rotated_embryo,'_rot_lineage',smoothing=3,color=lineage) 
 #plot_tracks(rotated_embryo,'_rot_fate_NEW',smoothing=3,color=fate)
-ut.plot_birthplaces(final_birthplaces)
-plt.savefig('170315_birthplaces')
-plt.clf()
+#ut.plot_birthplaces(final_birthplaces, scaling=pixel_to_microns)
+#plt.savefig('170315_birthplaces')
+#plt.clf()
 
 
 #MAKE SURE DURATION IS RIGHT - do times go into proper slots or does everything start at first embryo entry?

@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #plotting functions
 
 
-def plot_tracks(tracks_matrix, view=[0, 1], color=None, square=True, smoothing=1):
+def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoothing=1, scaling=[1,1,1]):
     '''
     Function to plot tracks.
     with arguments to specify color schemes, create plots with equal axes aka 'square',
@@ -31,13 +31,13 @@ def plot_tracks(tracks_matrix, view=[0, 1], color=None, square=True, smoothing=1
         tracks_matrix[:,:,1:-1] = (tracks_matrix[:,:,0:-2] + tracks_matrix[:,:,1:-1] + tracks_matrix[:,:,2:])/3
 
     for i in range(ntracks):
-        plt.plot(tracks_matrix[i, view[0], :].T,
-             tracks_matrix[i, view[1], :].T,c=color[i])
+        plt.plot(tracks_matrix[i, projection[0], :].T*scaling[projection[0]],
+             tracks_matrix[i, projection[1], :].T*scaling[projection[1]],c=color[i])
     if square:  
         plt.axis('equal')
 
 
-def plot_birthplaces(birthplaces, projection=[0,1], color=None, square=True):
+def plot_birthplaces(birthplaces, projection=[0,1], color=None, square=True, scaling=[1,1,1]):
     '''
     function to plot cell birthplaces, with arguments to specify color schemes, create plots with equal axes aka 'square',
     and project in dorsal, transverse, or lateral view
@@ -58,8 +58,8 @@ def plot_birthplaces(birthplaces, projection=[0,1], color=None, square=True):
 
     for i in range(nprogenitors):
         if birthplaces[i] != [-1,-1,-1]:
-            plt.plot(birthplaces[i][projection[0]],
-                     birthplaces[i][projection[1]],c=color[i],marker='o',markersize=12)
+            plt.plot(birthplaces[i][projection[0]]*scaling[projection[0]],
+                     birthplaces[i][projection[1]]*scaling[projection[1]],c=color[i],marker='o',markersize=12)
     if square:  
         plt.axis('equal')
 
