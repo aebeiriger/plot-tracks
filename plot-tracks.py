@@ -8,25 +8,25 @@ import utils as ut
 #update to direct towards proper tracks file (mTrackJ format)
 #designate metadata file provided in csv
 #designate which track is the notochord
-files = [#"data/170315_tracks",
-        "data/181113_tracks3",
+files = ["data/170315_tracks_NEW",
+        #"data/181113_tracks3",
         ]
 
-metas = [#"data/Unfinished_170315_Tracking.csv",
-        "data/Unfinished_181113_Tracking.csv",
+metas = ["data/170315TrackingNEW.csv",
+        #"data/Unfinished_181113_Tracking.csv",
         ]
 
-notochords = [#34,
-            5,
+notochords = [28,
+            #5,
             ]
 
 #designate angle and axis of rotation to register tracks anatomically
-angles = [#60,
-        30,
+angles = [60,
+        #30,
          ]
          
-axes = [#'z',
-        'z',
+axes = ['z',
+        #'z',
         ]
 
 #tracks this long or shorter will not be included
@@ -41,6 +41,7 @@ len_cutoff = 10
 #track_length is a 1 by x matrix storing number of points in each track
 #track_duration is a 1 by x matrix storing [min, max] times analyzed in a given track
 
+max_length = 0
 for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, axes):
     track_order, track_lengths, track_duration, noto_index = ut.read_track_data(file, notochord, len_cutoff, True)
 
@@ -56,6 +57,12 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
     calibrated_embryo = ut.interpolate_missing_timepoints(calibrated_embryo)
 
     rotated_embryo = ut.rotate_embryo(calibrated_embryo, angle, axis)
+    #max_length = max(max_length, rotated_embryo.shape[2])
+    try:
+        print(final_embryo.shape)
+        # TODO: Implement
+    except NameError:
+        final_embryo = rotated_embryo
 
     track_label = ut.import_meta(meta, 'Track Number')
 
@@ -64,28 +71,32 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
     lineage = ut.parse_metadata(meta, file, track_order, mode='lineage')
 
     birthplaces = ut.get_birthplaces(meta, file, rotated_embryo, track_order, track_label, track_duration)
+    try:
+        final_birthplaces = final_birthplaces + birthplaces
+    except NameError:
+        final_birthplaces = birthplaces
 
-    ut.plot_tracks(rotated_embryo, smoothing=3, color=lineage)
-    plt.savefig('compiled_tracks')
-    plt.clf()
-    #plot_tracks(rotated_embryo,'_YZ', view=[1,2])
-    #plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3)
-    #plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3,color=[1,100,1,5,1,5,1,5,1,5,1,5,1,1]
-    #plot_tracks(rotated_embryo,'_rot_lineage',smoothing=3,color=lineage) 
-    #plot_tracks(rotated_embryo,'_rot_fate_NEW',smoothing=3,color=fate)
-    ut.plot_birthplaces(birthplaces)
-    plt.savefig('compiled_birthplaces')
-    plt.clf()
-
+ut.plot_tracks(rotated_embryo, smoothing=3, color=fate)
+plt.savefig('170315_tracks_fate')
+plt.clf()
+#plot_tracks(rotated_embryo,'_YZ', view=[1,2])
+#plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3)
+#plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3,color=[1,100,1,5,1,5,1,5,1,5,1,5,1,1]
+#plot_tracks(rotated_embryo,'_rot_lineage',smoothing=3,color=lineage) 
+#plot_tracks(rotated_embryo,'_rot_fate_NEW',smoothing=3,color=fate)
+ut.plot_birthplaces(final_birthplaces)
+plt.savefig('170315_birthplaces')
+plt.clf()
 
 
 #MAKE SURE DURATION IS RIGHT - do times go into proper slots or does everything start at first embryo entry?
 #they go into proper slots but why???
 #TO FIX: last color in array does not show up
 #clean up error messages on import_meta 
-#color birthplaces by fate or division type (do same way by making color matrices)
+#color birthplaces by fate or division type (do same way by making color matrices) > DONE
 #put projections option into plot_tracks > DONE
 #combine tracks from multiple embryos
+#combine birthplaces from multiple embryos > DONE
 
 
 exit()

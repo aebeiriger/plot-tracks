@@ -45,7 +45,7 @@ def plot_birthplaces(birthplaces, projection=[0,1], color=None, square=True):
     '''
     nprogenitors = len(birthplaces)
     if color is None:
-        color = list(range(1,nprogenitors+1))
+        color = list(range(nprogenitors))
     elif not len(color) == nprogenitors:
         print('wrong size color')
         exit(1)
@@ -316,9 +316,11 @@ def get_birthplaces(meta, filename, tracks_matrix, track_order, track_label, tra
             if track_duration[j][0] < t:
                 birthplaces.append(list(tracks_matrix[j, :, t]))
             else:
-                birthplaces.append([-1,-1,-1])    
+                pass
+                #birthplaces.append([-1,-1,-1])    
         elif time == -1:
-            birthplaces.append([-1,-1,-1])
+            pass
+            #birthplaces.append([-1,-1,-1])
 
     return birthplaces
 
