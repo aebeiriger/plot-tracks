@@ -1,0 +1,29 @@
+Track Number,Position of Tracked Cell,Side of Embryo,Cell Division Timing,Cell Division Type,Progenitor vs Neuron Side,Division Plane,Sister Cell Track,Identity of Tracked Cell
+1,Front,R,43,Apical C-Div,same,244,17,CEN
+2,Second,R,47,Apical C-Div,opposite,223,18,FBMN/REN
+3,Third,R,43,Apical C-Div,same,219,19,FBMN/REN
+4,Fourth ,R,-1,-1,-1,-1,-1,Isl1(+)
+5,Fifth,R,31,Apical C-Div,same,246,20,FBMN/REN
+6,Sixth,R,8,Basal Div,opposite,296,21,FBMN/REN
+7,Seventh,R,-1,-1,-1,-1,-1,Isl1(+)
+8,First,L,110,Apical C-Div,same,235,22,FBMN/REN
+9,Second,L,45,Apical C-Div,same,217,23,CEN
+10,Third,L,108,Apical C-Div,same,244,24,FBMN/REN
+11,Fourth,L,26,Basal Div,opposed,248,27,FBMN/REN
+12,Fifth,L,37,Basal Div,same,259,25,FBMN/REN
+13,Sixth,L,37,Apical C-Div,opposed,261,26,FBMN/REN
+14,Seventh,L,71,Apical C-Div,opposed,265,-1,FBMN/REN
+15,Eighth,L,-1,-1,-1,-1,-1,Isl1(+)
+16,Ninth,L,97,Apical C-Div,opposed,211,-1,FBMN/REN
+17,Sister of #1,L,43,Apical C-Div,-1,244,1,Isl1(-)
+18,Sister of #2,L,47,Apical C-Div,-1,223,2,Isl1(-)
+19,Sister of #3,L,43,Apical C-Div,-1,219,3,Isl1(-)
+20,Sister of #5,L,31,Apical C-Div,-1,246,5,Isl1(-)
+21,Sister of #6,L,8,Basal Div,-1,296,6,Isl1(-)
+22,Sister of #8,R,110,Apical C-Div,-1,235,8,Isl1(-)
+23,Sister of #9,R,45,Apical C-Div,-1,217,9,Isl1(-)
+24,Sister of #10,R,108,Apical C-Div,-1,244,10,Isl1(-)
+25,Sister of #12,R,37,Basal Div,-1,259,12,Isl1(-)
+26,Sister of #13,R,37,Apical C-Div,-1,261,13,Isl1(-)
+27,Sister of #11,R,26,Basal Div,-1,248,11,Isl1(-)
+28,NOTOCORD,M,-1,-1,-1,-1,-1,-1
