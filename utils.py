@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #plotting functions
 
 
-def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoothing=1, scaling=[1,1,1], limits=None):
+def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoothing=1, scaling=[1,1,1], limits=None, birth_times=None, lineages=None):
     '''
     Function to plot tracks.
     with arguments to specify color schemes, create plots with equal axes aka 'square',
@@ -30,9 +30,18 @@ def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoot
     for i in range(smoothing):
         tracks_matrix[:,:,1:-1] = (tracks_matrix[:,:,0:-2] + tracks_matrix[:,:,1:-1] + tracks_matrix[:,:,2:])/3
 
+
     for i in range(ntracks):
-        plt.plot(tracks_matrix[i, projection[0], :].T*scaling[projection[0]],
-             tracks_matrix[i, projection[1], :].T*scaling[projection[1]],c=color[i])
+        if birth_times is None:
+            plt.plot(tracks_matrix[i, projection[0], :].T*scaling[projection[0]],
+                 -tracks_matrix[i, projection[1], :].T*scaling[projection[1]],c=color[i])
+        elif birth_times is not None:
+                if birth_times[i] != -1:
+                    #temp_matrix = average_birthplaces(tracks_matrix, lineages, birth_times)
+                    temp_matrix = tracks_matrix
+                    plt.plot(temp_matrix[i, projection[0], birth_times[i]-2].T*scaling[projection[0]],
+                         -temp_matrix[i, projection[1], birth_times[i]-2].T*scaling[projection[1]],c=color[i],marker='o',markersize=8)
+             
     if square:  
         plt.gca().set_aspect('equal')
 
@@ -215,6 +224,18 @@ def _generate_rotation_matrix(angle, axis):
 #----------------------------------------------------------------------------------
 #metadata functions
 
+def import_metadata(filename, index='Track Number'):
+    metadata = pd.read_csv(filename)
+    metadata = metadata.set_index(index)
+    return metadata
+    
+def get_column_from_metadata(metadata, column_name, track_order):
+    column_to_return = []
+    for track in track_order:
+        column_to_return.append(metadata.loc[track,column_name])
+    
+    return column_to_return
+
 def import_meta(filename, columnname):
     '''
     filename (str) - the metadata file to import from
@@ -282,29 +303,62 @@ def parse_metadata(meta, filename, track_order, mode=None):
 
     return track_label
 
+def get_lineages(metadata, track_order):
+    '''
+    def recursive_lineage(lineages, track_order, sister_tracks, index, nr_to_set):
+        lineages[index] = nr_to_set
+        if sister_tracks[index] == -1:
+            return
+        
+        else:
+            recursive_lineage(lineages, track_order, sister_tracks, track_order.index(sister_tracks[index]), nr_to_set)
+            
+    lineages = [-1 for item in track_order]
+    sister_tracks = get_column_from_metadata(metadata, 'Sister Cell Track', track_order)
+    for i in range(len(track_order)):
+        recursive_lineage(lineages, track_order, sister_tracks, i, i)
+        
+    print(lineages)
+    return(lineages)
+   
+    '''         
+    lineages = [-1 for item in track_order]
+    nr_lineages = -1
+    for i, track in enumerate(track_order):
+        if lineages[i] == -1:
+            nr_lineages += 1
+            lineages[i] = nr_lineages
+        sister_cell = metadata.loc[track, 'Sister Cell Track']
+        if sister_cell != -1:
+            lineages[track_order.index(sister_cell)] = lineages[i]
+    return lineages
+    
+    '''
+    sisters = get_column_from_metadata(metadata, 'Sister Cell Track', track_order)
+    lineages = [-1 for item in track_order]
+    nr_lineages = 0
+    for i, lineage in enumerate(lineages):
+        if lineage == -1:
+            lineages[i] = nr_lineages
+            nr_lineages += 1
+        lineage[track_order.index(sisters[i])] = lineage[i]
+    return lineages
+    '''
 
-def _fate_by_num(string):
+
+def _fate_to_num(fate, fate_to_num_dict):
     '''        
     converts cell fate data to integers
     creates color matrix 'fate' based on cell identities
 
     '''
-    if string == 'NOTO':
-        return 0
-    elif string == 'FBMN/REN':
-        return 1
-    elif string == 'CEN':
-        return 2
-    elif string == 'Isl1(-)':
-        return 3
-    #Error handling
-    else:
-        return -1
-        print('incorrect fate')
+    return [fate_to_num_dict[a] for a in fate]
 
 
 def get_birthplaces(meta, filename, tracks_matrix, track_order, track_label, track_duration):
     '''
+    'Cell Division Time' starts from one
+    
     builds a list of cell birthplace coordinates [x,y,z]
     references point "t" in rotated_embryo matrix to get coordinates
     if no birthplace is found, [-1,-1,-1] added so list is compatible with color matrices
@@ -334,5 +388,13 @@ def get_birthplaces(meta, filename, tracks_matrix, track_order, track_label, tra
 
     return birthplaces
 
+def average_birthplaces(tracks_matrix, lineages, birth_times):
+    averaged_matrix = tracks_matrix
+    for i in range(len(lineages)):
+        for j in range(len(lineages)):
+            if lineages[i] == lineages[j] and birth_times[i] == birth_times[j]:
+                averaged_matrix[i, :, birth_times[i]-2] = (tracks_matrix[i, :, birth_times[i]-2] + tracks_matrix[j, :, birth_times[i]-2])/2
+                averaged_matrix[j, :, birth_times[i]-2] = averaged_matrix[i, :, birth_times[i]-2]
 
-
+    return averaged_matrix
+    

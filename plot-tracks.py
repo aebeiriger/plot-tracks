@@ -4,6 +4,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import utils as ut
 
+from constants import fate_to_num_dict
 
 #update to direct towards proper tracks file (mTrackJ format)
 #designate metadata file provided in csv
@@ -21,11 +22,12 @@ notochords = [28,
             ]
 
 #designate angle and axis of rotation to register tracks anatomically
-angles = [[60,15],
+angles = [[60, 0, 0],
+        #[60,-20,15],
           #[0,30],
          ]
          
-axes = [['z','x'],
+axes = [['z','y','x'],
         #['z','x'],
         ]
 
@@ -37,7 +39,7 @@ len_cutoff = 10
 pixel_to_microns = [0.43,0.43,0.43]
 
 # Plot limits [[xmin,xmax],[ymin,ymax]]
-plot_lims = [[-75,75],[-75,75]]
+plot_lims = None #[[-75,75],[-75,75]]
 
 
 #-----------------------------
@@ -70,29 +72,34 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
     except NameError:
         final_embryo = rotated_embryo
 
-    track_label = ut.import_meta(meta, 'Track Number')
+    #track_label = ut.import_meta(meta, 'Track Number')
+    metadata = ut.import_metadata(meta, 'Track Number')
+    
+    #fate = ut.parse_metadata(meta, file, track_order, mode='fate')
+    fate = ut.get_column_from_metadata(metadata, 'Identity of Tracked Cell', track_order)
+    fate = ut._fate_to_num(fate, fate_to_num_dict)
 
-    fate = ut.parse_metadata(meta, file, track_order, mode='fate')
+    #lineage = ut.parse_metadata(meta, file, track_order, mode='lineage')
+    lineages = ut.get_lineages(metadata, track_order)
 
-    lineage = ut.parse_metadata(meta, file, track_order, mode='lineage')
+    #birthplaces = ut.get_birthplaces(meta, file, rotated_embryo, track_order, track_label, track_duration)
+    birth_times = ut.get_column_from_metadata(metadata, 'Cell Division Timing', track_order)
+#    try:
+#        final_birthplaces = final_birthplaces + birthplaces
+#    except NameError:
+#        final_birthplaces = birthplaces
 
-    birthplaces = ut.get_birthplaces(meta, file, rotated_embryo, track_order, track_label, track_duration)
-    try:
-        final_birthplaces = final_birthplaces + birthplaces
-    except NameError:
-        final_birthplaces = birthplaces
 
-ut.plot_tracks(rotated_embryo, smoothing=3, projection=[0, 1], scaling=pixel_to_microns, limits=plot_lims)
-plt.savefig('170315_tracks_YZrotation')
-plt.clf()
-#plot_tracks(rotated_embryo,'_YZ', view=[1,2])
-#plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3)
-#plot_tracks(rotated_embryo,'_rot_supersmooth2',smoothing=3,color=[1,100,1,5,1,5,1,5,1,5,1,5,1,1]
-#plot_tracks(rotated_embryo,'_rot_lineage',smoothing=3,color=lineage) 
-#plot_tracks(rotated_embryo,'_rot_fate_NEW',smoothing=3,color=fate)
-ut.plot_birthplaces(final_birthplaces, scaling=pixel_to_microns, limits=plot_lims)
-plt.savefig('170315_birthplaces')
-plt.clf()
+projections = [[0,1], [0,2], [1,2]]
+coloring = ['lineages', 'fate', 'None']
+birth_timings = ['birth_times', 'None']
+for projection in projections:
+    for color in coloring:
+        for plotting_style in birth_timings:
+            ut.plot_tracks(rotated_embryo, smoothing=3, projection=projection, scaling=pixel_to_microns, limits=plot_lims, color=eval(color), birth_times=eval(plotting_style), lineages=lineages)
+            plt.savefig('170315_tracks_rotation'+str(projection)+'_'+color+'_'+plotting_style)
+            plt.clf()
+
 
 
 #MAKE SURE DURATION IS RIGHT - do times go into proper slots or does everything start at first embryo entry?
@@ -104,7 +111,5 @@ plt.clf()
 #combine tracks from multiple embryos
 #combine birthplaces from multiple embryos > DONE
 
-
-exit()
 
 
