@@ -18,6 +18,7 @@ def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoot
 
     '''
     ntracks = tracks_matrix.shape[0]
+
     if color is None:
         color = range(ntracks)
     elif not len(color) == ntracks:
@@ -30,50 +31,16 @@ def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoot
     for i in range(smoothing):
         tracks_matrix[:,:,1:-1] = (tracks_matrix[:,:,0:-2] + tracks_matrix[:,:,1:-1] + tracks_matrix[:,:,2:])/3
 
-
     for i in range(ntracks):
         if birth_times is None:
             plt.plot(tracks_matrix[i, projection[0], :].T*scaling[projection[0]],
-                 -tracks_matrix[i, projection[1], :].T*scaling[projection[1]],c=color[i])
+                 tracks_matrix[i, projection[1], :].T*scaling[projection[1]],c=color[i])
         elif birth_times is not None:
                 if birth_times[i] != -1:
-                    #temp_matrix = average_birthplaces(tracks_matrix, lineages, birth_times)
-                    temp_matrix = tracks_matrix
-                    plt.plot(temp_matrix[i, projection[0], birth_times[i]-2].T*scaling[projection[0]],
-                         -temp_matrix[i, projection[1], birth_times[i]-2].T*scaling[projection[1]],c=color[i],marker='o',markersize=8)
+                    plt.plot(tracks_matrix[i, projection[0], birth_times[i]-2].T*scaling[projection[0]],
+                         tracks_matrix[i, projection[1], birth_times[i]-2].T*scaling[projection[1]],c=color[i],marker='o',markersize=8)
+
              
-    if square:  
-        plt.gca().set_aspect('equal')
-
-    if limits:
-        plt.xlim(limits[0][0],limits[0][1])
-        plt.ylim(limits[1][0],limits[1][1])
-
-
-def plot_birthplaces(birthplaces, projection=[0,1], color=None, square=True, scaling=[1,1,1], limits=None):
-    '''
-    function to plot cell birthplaces, with arguments to specify color schemes, create plots with equal axes aka 'square',
-    and project in dorsal, transverse, or lateral view
-
-    '''
-    nprogenitors = len(birthplaces)
-    if color is None:
-        color = list(range(nprogenitors))
-    elif not len(color) == nprogenitors:
-        print('wrong size color')
-        exit(1)
-
-    max_color = max(color)
-    color = [a/max_color for a in color]
-    color = plt.cm.rainbow(color)
-    
-    assert len(projection) == 2
-
-    for i in range(nprogenitors):
-        if birthplaces[i] != [-1,-1,-1]:
-            plt.plot(birthplaces[i][projection[0]]*scaling[projection[0]],
-                     birthplaces[i][projection[1]]*scaling[projection[1]],c=color[i],marker='o',markersize=12)
-
     if square:  
         plt.gca().set_aspect('equal')
 
@@ -156,8 +123,17 @@ def create_embryo(filename, track_order, track_lengths, track_duration, noto_ind
     return embryo
 
 
-def calibrate_to_noto(embryo, noto_index, track_duration):
-    calibrated_embryo = embryo[:, :, :] - embryo[noto_index, :, :]
+def calibrate_to_noto(embryo, noto_index, track_duration, normalize_to_noto=True, flip_perspective=True):
+    if flip_perspective:
+        embryo[:,1,:] = -embryo[:, 1, :]
+        
+    if normalize_to_noto:
+        calibrated_embryo = embryo[:, :, :] - embryo[noto_index, :, :]
+    else:
+        calibrated_embryo = embryo
+    
+
+    
     for i in range(0, calibrated_embryo.shape[0]):
         start = max(track_duration[i][0], track_duration[noto_index][0])
         end = min(track_duration[i][1], track_duration[noto_index][1])
@@ -236,72 +212,6 @@ def get_column_from_metadata(metadata, column_name, track_order):
     
     return column_to_return
 
-def import_meta(filename, columnname):
-    '''
-    filename (str) - the metadata file to import from
-    columnname (str) - the column name to import data from
-
-    returns: a list containing entries of specified column from the metadata file
-    '''
-    df = pd.read_csv(filename)
-    return list(df[columnname].values)
-
-
-def parse_metadata(meta, filename, track_order, mode=None):
-    '''
-    imports metadata from csv provided in 'meta' variable at top
-    requires columns 'Track Number', 'Sister Cell Track', 'Identity of Tracked Cell', 'Cell Division Timing'
-    creates matrices for color-coding plots by lineage or fate
-
-    '''
-    track_label = import_meta(meta, 'Track Number')
-
-    if len(track_order) != len(track_label):
-        print('metadata and track data do not match')
-        exit(1)
-
-    '''
-    track_order (raw data) and track_label (meta data) might not follow the same order
-    'lineage' and 'fate' are built in the same sequence as track_order
-    track_label is only used as a reference
-
-    '''
-
-    if mode is 'lineage':
-        sister = import_meta(meta, 'Sister Cell Track')
-        lineage = [-1 for item in track_order]
-        k = 0
-
-        for i in range(len(lineage)):
-            if lineage[i] == -1:
-                lineage[i] = k
-                j = track_order[i]
-                j = track_label.index(j)
-                if sister[j] != -1:
-                    l = sister[j]
-                    l = track_order.index(l)
-                    lineage[l] = k
-                k=k+1
-
-        return lineage
-
-    elif mode is 'fate':
-        cell_fate = import_meta(meta, 'Identity of Tracked Cell')
-
-        if len(track_order) != len(cell_fate):
-            print('fate entry missing')
-            exit(1)
-
-        fate = []
-        for track in track_order:
-            j = track_label.index(track)
-            fate.append(cell_fate[j])
-
-        fate = [_fate_by_num(a) for a in fate]
-
-        return fate
-
-    return track_label
 
 def get_lineages(metadata, track_order):
     '''
@@ -333,17 +243,6 @@ def get_lineages(metadata, track_order):
             lineages[track_order.index(sister_cell)] = lineages[i]
     return lineages
     
-    '''
-    sisters = get_column_from_metadata(metadata, 'Sister Cell Track', track_order)
-    lineages = [-1 for item in track_order]
-    nr_lineages = 0
-    for i, lineage in enumerate(lineages):
-        if lineage == -1:
-            lineages[i] = nr_lineages
-            nr_lineages += 1
-        lineage[track_order.index(sisters[i])] = lineage[i]
-    return lineages
-    '''
 
 
 def _fate_to_num(fate, fate_to_num_dict):
@@ -354,39 +253,6 @@ def _fate_to_num(fate, fate_to_num_dict):
     '''
     return [fate_to_num_dict[a] for a in fate]
 
-
-def get_birthplaces(meta, filename, tracks_matrix, track_order, track_label, track_duration):
-    '''
-    'Cell Division Time' starts from one
-    
-    builds a list of cell birthplace coordinates [x,y,z]
-    references point "t" in rotated_embryo matrix to get coordinates
-    if no birthplace is found, [-1,-1,-1] added so list is compatible with color matrices
-
-    '''
-    
-    progenitor = import_meta(meta, 'Cell Division Timing')
-    birthplaces = []
-
-    for i, time in enumerate(progenitor):
-        try:
-            time = int(time)
-        except:
-            print(i, 'division time is not a number')
-        if time != -1:
-            t = time
-            j = track_label[i]
-            j = track_order.index(j)
-            if track_duration[j][0] < t:
-                birthplaces.append(list(tracks_matrix[j, :, t]))
-            else:
-                pass
-                #birthplaces.append([-1,-1,-1])    
-        elif time == -1:
-            pass
-            #birthplaces.append([-1,-1,-1])
-
-    return birthplaces
 
 def average_birthplaces(tracks_matrix, lineages, birth_times):
     averaged_matrix = tracks_matrix

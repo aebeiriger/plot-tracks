@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('module://ipykernel.pylab.backend_inline')
 import matplotlib.pyplot as plt
 import utils as ut
 
@@ -9,7 +9,8 @@ from constants import fate_to_num_dict
 #update to direct towards proper tracks file (mTrackJ format)
 #designate metadata file provided in csv
 #designate which track is the notochord
-files = ["data/170315_tracks_NEW",
+files = [#"data/170315_tracks_NEW",
+         "data/170315_tracks_noto28_rotate",
         #"data/181113_tracks3",
         ]
 
@@ -22,7 +23,7 @@ notochords = [28,
             ]
 
 #designate angle and axis of rotation to register tracks anatomically
-angles = [[60, 0, 0],
+angles = [[-60, -20, 15],
         #[60,-20,15],
           #[0,30],
          ]
@@ -37,9 +38,6 @@ len_cutoff = 10
 
 #pixel to microns conversion
 pixel_to_microns = [0.43,0.43,0.43]
-
-# Plot limits [[xmin,xmax],[ymin,ymax]]
-plot_lims = None #[[-75,75],[-75,75]]
 
 
 #-----------------------------
@@ -58,7 +56,7 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
 
     #creates new matrix 'calibrated_embryo' in which all values are registered to the notochord track
     #duplicates first and last points to fill duration of dataset in case track is short - wil keep t lined up with 'points' dimension
-    calibrated_embryo = ut.calibrate_to_noto(embryo, noto_index, track_duration)
+    calibrated_embryo = ut.calibrate_to_noto(embryo, noto_index, track_duration, True, True)
 
     #in case of missing coordinates from a timepoint, prints missing timepoint
     #takes coordinates at previous and subsequent timepoints and interpolates to generate missing point coordinates
@@ -91,12 +89,20 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
 
 
 projections = [[0,1], [0,2], [1,2]]
+projection_lims = [[[-75,75],[-75,75]],[[-60,60],[0,120]],[[-40,80],[0,120]]]
 coloring = ['lineages', 'fate', 'None']
 birth_timings = ['birth_times', 'None']
-for projection in projections:
+
+temp_scale = pixel_to_microns
+for i, projection in enumerate(projections):
     for color in coloring:
         for plotting_style in birth_timings:
-            ut.plot_tracks(rotated_embryo, smoothing=3, projection=projection, scaling=pixel_to_microns, limits=plot_lims, color=eval(color), birth_times=eval(plotting_style), lineages=lineages)
+            limits = projection_lims[i]
+            # We want to flip YZ projections
+            temp_scale = [a for a in pixel_to_microns]
+            if projection == [1,2]:
+                temp_scale[1] = -temp_scale[1] 
+            ut.plot_tracks(rotated_embryo, smoothing=3, projection=projection, scaling=temp_scale, limits=limits, color=eval(color), birth_times=eval(plotting_style), lineages=lineages)
             plt.savefig('170315_tracks_rotation'+str(projection)+'_'+color+'_'+plotting_style)
             plt.clf()
 
