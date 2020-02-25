@@ -1,0 +1,15 @@
+Track Number,Location of Tracked Cell,Side of Embryo,Rhombomere of Origin,Cell Division Timing,Cell Division Type,Cell Division Z-Plane,Sister Cell Track,Last Tracked Point,Identity of Tracked Cell,Notes/ Difficult Timepoints,
+14,Front,R,r5,43,Apical C-Div,244,30,t=1-390,CEN,t=233 offset need to track over it,
+15,Second,R,r4,48,Apical C-Div,263,32,t=1-390,FBMN/REN,t=86 lotsa movement ,t=1 at BL; moves A; div across midline; track 15 winds up BR and eventual FBMN
+19,Third,R,r4,4,Apical C-Div,192,29,t=1-390,FBMN/REN,t=350 onward: might be two FBMNs,t=131-167 is iffy; following two cells for part of it
+20,Fifth,R,r4,-1,None,-1,-1,t=3-390,FBMN/REN,t=30 and before - double check with ortho slicer,
+21,Sixth,R,r4,-1,None,-1,-1,t=1-390; 22 at 95,FBMN/REN,t=94-95 disappears,
+23,Fourth,R,r4,-1,None,-1,-1,t=175; z=226,FBMN/REN,in progress; gets iffy around t=150,
+24,part of 23,R,r4,-1,None,-1,-1,t=1-175,FBMN/REN,appears to wind up outside nt; re-track,
+25,First,L,r4,-1,None,-1,-1,,FBMN/REN,t=187 iffy,t=139 iffy z=238
+28,Second,L,r4,-1,None,-1,-1,t=146 ,FBMN/REN,gets iffy start new track to re-find,
+26,,L,r4,-1,None,-1,-1,t=187-388,FBMN/REN,gets iffy at t=185ish z=228 and t=187 z=222,
+29,Sister of #19,R,r5,4,Apical C-Div,244,19,,ISL1(-),gets kinda rough around t=135 z=238; no clue if accurate after that,
+30,Sister of #14,R,r4,43,Apical C-Div,263,14,,ISL1(-),t=92 and 97-98 might be two cells?  z=283,two cells at t=154-155 z=289
+32,Sister of #15,R,r4,48,Apical C-Div,192,15,t=48-390,FBMN/REN,t=185-190 z=238 gets iffy,
+34,NOTOCORD,M,M,-1,None,-1,-1,,NOTO,all good,

@@ -1,0 +1,34 @@
+Track Number,Position of Tracked Cell,Side of Embryo,Cell Division Timing,Cell Division Type,Progenitor vs Neuron Side,Metaphase Plate Angle (Relative to Midline),Division Plane,Sister Cell Track,Identity of Tracked Cell
+1,front,R,124,apical,same,parallel,38,50,CEN
+2,also front,R,128,apical,same,parallel,60,51,FBMN/REN
+3,second,R,31,apical,same,parallel,73,38,FBMN/REN
+4,third,R,17,apical,same,parallel,82,37,FBMN/REN
+5,fourth,R,98,apical,same,parallel,74,45,FBMN/REN
+7,fifth,R,74,apical,opposed,parallel,74,41,FBMN/REN
+9,ninth,R,113,apical,same,parallel,79,46,FBMN/REN
+10,tenth,R,-1,-1,-1,-1,-1,-1,Isl1(+)
+8,eighth,R,-1,-1,-1,-1,-1,-1,Isl1(+)
+11,front,L,138,apical,same,parallel,53,52,CEN
+18,second,L,72,apical,same,parallel,71,40,FBMN/REN
+14,third,L,115,apical,same,parallel,92,49,CEN
+13,also third,L,93,apical,opposed,parallel,72,43,FBMN/REN
+15,fourth,L,140,apical,same,perpendicular,71,53,FBMN/REN
+17,fifth,L,94,apical,same,parallel,71,44,FBMN/REN
+16,also fifth,L,100,apical,same,parallel,77,48,FBMN/REN
+20,seventh,L,61,apical,same,parallel,93,39,FBMN/REN
+36,NOTOCHORD,-1,-1,-1,-1,-1,-1,-1,NOTO
+37,sister to #4,L,17,apical,opposed,parallel,82,4,Isl1(-)
+38,sister to #3,L,31,apical,opposed,parallel,73,3,FBMN/REN
+39,sister to #20,R,61,apical,opposed,parallel,93,20,Isl1(-)
+40,sister to #18,R,72,apical,opposed,parallel,71,18,Isl1(-)
+41,sister to #7,L,74,apical,same,parallel,74,7,Isl1(-)
+43,sister to #13,R,93,apical,same,parallel,72,13,Isl1(-)
+44,sister to #17,R,91,apical,opposed,parallel,73,17,Isl1(-)
+45,sister to #5,L,98,apical,opposed,parallel,74,5,FBMN/REN
+48,sister to #16,R,100,apical,opposed,parallel,77,16,Isl1(-)
+46,sister to #9,L,113,apical,opposed,parallel,79,9,Isl1(-)
+49,sister to #14,R,115,apical,opposed,parallel,92,14,Isl1(-)
+50,sister to #1,L,124,apical,opposed,parallel,38,1,Isl1(-)
+51,sister to #2,L,128,apical,opposed,parallel,60,2,Isl1(-)
+52,sister to #11,R,138,apical,opposed,parallel,53,11,Isl1(-)
+53,sister to #15,L,140,apical,opposed,perpendicular,71,15,Isl1(-)

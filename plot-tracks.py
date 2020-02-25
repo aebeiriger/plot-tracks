@@ -51,6 +51,10 @@ pixel_to_microns = [0.43,0.43,0.43]
 #track_duration is a 1 by x matrix storing [min, max] times analyzed in a given track
 
 max_length = 0
+final_tracks = []
+final_lineages = []
+final_fates = []
+final_times= []
 for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, axes):
     track_order, track_lengths, track_duration, noto_index = ut.read_track_data(file, notochord, len_cutoff, True)
 
@@ -67,11 +71,12 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
 
     rotated_embryo = ut.rotate_embryo(calibrated_embryo, angle, axis)
     #max_length = max(max_length, rotated_embryo.shape[2])
-    try:
-        print(final_embryo.shape)
+    #try:
+    #    print(final_embryo.shape)
         # TODO: Implement
-    except NameError:
-        final_embryo = rotated_embryo
+    #except NameError:
+    #    final_embryo = rotated_embryo
+    final_tracks.append(rotated_embryo)
 
     #track_label = ut.import_meta(meta, 'Track Number')
     metadata = ut.import_metadata(meta, 'Track Number')
@@ -79,12 +84,15 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
     #fate = ut.parse_metadata(meta, file, track_order, mode='fate')
     fate = ut.get_column_from_metadata(metadata, 'Identity of Tracked Cell', track_order)
     fate = ut._fate_to_num(fate, fate_to_num_dict)
+    final_fates.append(fate)
 
     #lineage = ut.parse_metadata(meta, file, track_order, mode='lineage')
     lineages = ut.get_lineages(metadata, track_order)
+    final_lineages.append(lineages)
 
     #birthplaces = ut.get_birthplaces(meta, file, rotated_embryo, track_order, track_label, track_duration)
     birth_times = ut.get_column_from_metadata(metadata, 'Cell Division Timing', track_order)
+    final_times.append(birth_times)
 #    try:
 #        final_birthplaces = final_birthplaces + birthplaces
 #    except NameError:
@@ -93,19 +101,22 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
 
 projections = [[0,1], [0,2], [1,2]]
 projection_lims = [[[-75,75],[-120,40]],[[-60,60],[0,120]],[[-35,110],[0,120]]]
-coloring = ['lineages', 'fate', 'None']
+#coloring = ['lineages', 'fate', 'None']
+#birth_timings = ['birth_times', 'None']
+coloring = [final_lineages, final_fate, 'None']
 birth_timings = ['birth_times', 'None']
 
 temp_scale = pixel_to_microns
 for i, projection in enumerate(projections):
     for color in coloring:
         for plotting_style in birth_timings:
-            limits = projection_lims[i]
-            # We want to flip YZ projections
-            temp_scale = [a for a in pixel_to_microns]
-            if projection == [1,2]:
-                temp_scale[1] = -temp_scale[1] 
-            ut.plot_tracks(rotated_embryo, smoothing=3, projection=projection, scaling=temp_scale, limits=limits, color=eval(color), birth_times=eval(plotting_style), lineages=lineages)
+            for final_track, final_lineage in zip(final_tracks, final_lineages):
+                limits = projection_lims[i]
+                # We want to flip YZ projections
+                temp_scale = [a for a in pixel_to_microns]
+                if projection == [1,2]:
+                    temp_scale[1] = -temp_scale[1] 
+                ut.plot_tracks(rotated_embryo, smoothing=3, projection=projection, scaling=temp_scale, limits=limits, color=eval(color), birth_times=eval(plotting_style), lineages=lineages)
             plt.savefig('combined_tracks_'+str(projection)+'_'+color+'_'+plotting_style)
             plt.clf()
 

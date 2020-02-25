@@ -1,0 +1,6 @@
+Track Number,Position of Tracked Cell,Side of Embryo,Cell Division Timing,Cell Division Type,Progenitor vs Neuron Side,Metaphase Plate Angle (Relative to Midline),Division Plane,Sister Cell Track,Identity of Tracked Cell,Notes/ Difficult Timepoints
+5,NOTO,-1,-1,-1,-1,-1,-1,-1,NOTO,
+6,Third,R,65,basal,same,parallel,239,8,FBMN/REN,
+8,Sister of #6,R,65,basal,same,parallel,239,6,ISL1(-),"8 divides again at t368, did not follow daughters"
+14,Also third,R,113,apical,same,parallel,189,15,FBMN/REN,
+15,Sister of #14,R,113,apical,same,parallel,189,14,ISL1(-),
