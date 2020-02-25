@@ -40,7 +40,11 @@ axes = [['z','y','x'],
 len_cutoff = 10
 
 #pixel to microns conversion
-pixel_to_microns = [0.43,0.43,0.43]
+pixel_to_microns = [
+[0.43,0.43,0.43],
+[0.43,0.43,0.43],
+#[0.43,0.43,0.43]
+]	 
 
 
 #-----------------------------
@@ -103,21 +107,22 @@ projections = [[0,1], [0,2], [1,2]]
 projection_lims = [[[-75,75],[-120,40]],[[-60,60],[0,120]],[[-35,110],[0,120]]]
 #coloring = ['lineages', 'fate', 'None']
 #birth_timings = ['birth_times', 'None']
-coloring = [final_lineages, final_fate, 'None']
-birth_timings = ['birth_times', 'None']
+coloring = [final_lineages, final_fates, [None]*len(final_lineages)]
+birth_timings = [final_times, [None]*len(final_lineages)]
+coloring_tags = ['final_lineages', 'final_fates', 'None']
+birth_timings_tags = ['final_times', 'None']
 
-temp_scale = pixel_to_microns
 for i, projection in enumerate(projections):
-    for color in coloring:
-        for plotting_style in birth_timings:
-            for final_track, final_lineage in zip(final_tracks, final_lineages):
+    for color, color_tag in zip(coloring, coloring_tags):
+        for plotting_style, style_tag in zip(birth_timings, birth_timings_tags):
+            for j, (final_track, final_lineage, temp_scale) in enumerate(zip(final_tracks, final_lineages, pixel_to_microns)):
                 limits = projection_lims[i]
                 # We want to flip YZ projections
-                temp_scale = [a for a in pixel_to_microns]
+                temp_scale = [a for a in temp_scale]
                 if projection == [1,2]:
                     temp_scale[1] = -temp_scale[1] 
-                ut.plot_tracks(rotated_embryo, smoothing=3, projection=projection, scaling=temp_scale, limits=limits, color=eval(color), birth_times=eval(plotting_style), lineages=lineages)
-            plt.savefig('combined_tracks_'+str(projection)+'_'+color+'_'+plotting_style)
+                ut.plot_tracks(final_track, smoothing=3, projection=projection, scaling=temp_scale, limits=limits, color=color[j], birth_times=plotting_style[j], lineages=final_lineage)
+            plt.savefig('combined_tracks_'+str(projection)+'_'+color_tag+'_'+style_tag)
             plt.clf()
 
 
