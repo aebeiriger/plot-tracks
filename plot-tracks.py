@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib
-matplotlib.use('module://ipykernel.pylab.backend_inline')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import utils as ut
 
@@ -9,27 +9,30 @@ from constants import fate_to_num_dict
 #update to direct towards proper tracks file (mTrackJ format)
 #designate metadata file provided in csv
 #designate which track is the notochord
-files = [#"data/170315_tracks_NEW",
-         "data/170315_tracks_noto28_rotate",
+files = ["data/180814.tracks.Feb22.CLEAN",
+        "data/170315_tracks_NEW",
+        #"data/170315_tracks_noto28_rotate",
         #"data/181113_tracks3",
         ]
 
-metas = ["data/170315TrackingNEW.csv",
+metas = ["data/180814_Tracking_CLEAN.csv",
+        "data/170315TrackingNEW.csv",
         #"data/Unfinished_181113_Tracking.csv",
         ]
 
-notochords = [28,
-            #5,
-            ]
+notochords = [36,
+              36
+              #5,
+              ]
 
 #designate angle and axis of rotation to register tracks anatomically
-angles = [[-60, -20, 15],
-        #[60,-20,15],
-          #[0,30],
+angles = [[-95, 0, 5],
+         [-60, -20, 15],
+         #[0,30],
          ]
          
 axes = [['z','y','x'],
-        #['z','x'],
+        ['z','y','x'],
         ]
 
 
@@ -89,7 +92,7 @@ for file, meta, notochord, angle, axis in zip(files, metas, notochords, angles, 
 
 
 projections = [[0,1], [0,2], [1,2]]
-projection_lims = [[[-75,75],[-75,75]],[[-60,60],[0,120]],[[-40,80],[0,120]]]
+projection_lims = [[[-75,75],[-120,40]],[[-60,60],[0,120]],[[-35,110],[0,120]]]
 coloring = ['lineages', 'fate', 'None']
 birth_timings = ['birth_times', 'None']
 
@@ -103,7 +106,7 @@ for i, projection in enumerate(projections):
             if projection == [1,2]:
                 temp_scale[1] = -temp_scale[1] 
             ut.plot_tracks(rotated_embryo, smoothing=3, projection=projection, scaling=temp_scale, limits=limits, color=eval(color), birth_times=eval(plotting_style), lineages=lineages)
-            plt.savefig('170315_tracks_rotation'+str(projection)+'_'+color+'_'+plotting_style)
+            plt.savefig('combined_tracks_'+str(projection)+'_'+color+'_'+plotting_style)
             plt.clf()
 
 
