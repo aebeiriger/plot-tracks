@@ -46,6 +46,16 @@ pixel_to_microns = [
 #[0.43,0.43,0.43]
 ]	 
 
+# Fates to plot
+fates_to_plot = [
+#                 'NOTO',
+                 'FBMN/REN',
+                'CEN',
+#                'Isl1(-)',
+#                 'Isl1(+)',
+                 ]
+
+
 
 #-----------------------------
 
@@ -53,6 +63,8 @@ pixel_to_microns = [
 #track_order is a 1 by x matrix storing track numbers
 #track_length is a 1 by x matrix storing number of points in each track
 #track_duration is a 1 by x matrix storing [min, max] times analyzed in a given track
+
+fates_to_plot = ut._fate_to_num(fates_to_plot, fate_to_num_dict)
 
 max_length = 0
 final_tracks = []
@@ -115,13 +127,23 @@ birth_timings_tags = ['final_times', 'None']
 for i, projection in enumerate(projections):
     for color, color_tag in zip(coloring, coloring_tags):
         for plotting_style, style_tag in zip(birth_timings, birth_timings_tags):
-            for j, (final_track, final_lineage, temp_scale) in enumerate(zip(final_tracks, final_lineages, pixel_to_microns)):
+            for j, (final_track, final_lineage, temp_scale, final_fate) in enumerate(zip(final_tracks, final_lineages, pixel_to_microns, final_fates)):
                 limits = projection_lims[i]
                 # We want to flip YZ projections
                 temp_scale = [a for a in temp_scale]
                 if projection == [1,2]:
                     temp_scale[1] = -temp_scale[1] 
-                ut.plot_tracks(final_track, smoothing=3, projection=projection, scaling=temp_scale, limits=limits, color=color[j], birth_times=plotting_style[j], lineages=final_lineage)
+                ut.plot_tracks(
+                        final_track,
+                        smoothing=3,
+                        projection=projection,
+                        scaling=temp_scale,
+                        limits=limits,
+                        color=color[j],
+                        birth_times=plotting_style[j],
+                        lineages=final_lineage,
+                        fates = final_fate,
+                        fates_to_plot=fates_to_plot)
             plt.savefig('combined_tracks_'+str(projection)+'_'+color_tag+'_'+style_tag)
             plt.clf()
 

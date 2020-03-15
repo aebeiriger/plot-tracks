@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #plotting functions
 
 
-def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoothing=1, scaling=[1,1,1], limits=None, birth_times=None, lineages=None):
+def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoothing=1, scaling=[1,1,1], limits=None, birth_times=None, lineages=None, fates=None, fates_to_plot=None):
     '''
     Function to plot tracks.
     with arguments to specify color schemes, create plots with equal axes aka 'square',
@@ -32,13 +32,14 @@ def plot_tracks(tracks_matrix, projection=[0, 1], color=None, square=True, smoot
         tracks_matrix[:,:,1:-1] = (tracks_matrix[:,:,0:-2] + tracks_matrix[:,:,1:-1] + tracks_matrix[:,:,2:])/3
 
     for i in range(ntracks):
-        if birth_times is None:
-            plt.plot(tracks_matrix[i, projection[0], :].T*scaling[projection[0]],
-                 tracks_matrix[i, projection[1], :].T*scaling[projection[1]],c=color[i])
-        elif birth_times is not None:
+        if fates is not None and fates_to_plot is not None and fates[i] in fates_to_plot:
+            if birth_times is None:
+                plt.plot(tracks_matrix[i, projection[0], :].T*scaling[projection[0]],
+                    tracks_matrix[i, projection[1], :].T*scaling[projection[1]],c=color[i])
+            elif birth_times is not None:
                 if birth_times[i] != -1:
                     plt.plot(tracks_matrix[i, projection[0], birth_times[i]-2].T*scaling[projection[0]],
-                         tracks_matrix[i, projection[1], birth_times[i]-2].T*scaling[projection[1]],c=color[i],marker='o',markersize=8)
+                        tracks_matrix[i, projection[1], birth_times[i]-2].T*scaling[projection[1]],c=color[i],marker='o',markersize=8)
 
              
     if square:  
